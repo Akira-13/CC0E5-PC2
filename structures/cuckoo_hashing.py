@@ -1,6 +1,6 @@
 import random
 from typing import Union, List, Optional
-from twisted_tabulation_hash import TwistedTabulationHash
+from tabulation_hashes.twisted_tabulation_hash import TwistedTabulationHash
 
 class CuckooHashTable:
     def __init__(self, size: int = 11, max_displacements: int = 10):
