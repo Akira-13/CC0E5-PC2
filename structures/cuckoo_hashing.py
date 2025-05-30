@@ -4,6 +4,12 @@ from tabulation_hashes.twisted_tabulation_hash import TwistedTabulationHash
 
 class CuckooHashTable:
     def __init__(self, size: int = 11, max_displacements: int = 10):
+        if not isinstance(size, int) or size <= 0:
+            raise TypeError(f"size must be a positive integer")
+        
+        if not isinstance(max_displacements, int) or max_displacements <= 0:
+            raise TypeError(f"max_displacements must be a positive integer")
+        
         self.size = size
         self.max_displacements = max_displacements
         self.table = [None] * size
