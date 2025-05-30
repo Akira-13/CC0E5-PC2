@@ -1,53 +1,52 @@
-import time
-import random
 from structures.cuckoo_hashing import CuckooHashTable
 
-def generate_keys(n, key_space=1000000):
-    return random.sample(range(key_space), n)
+def show_table(table):
+    snapshot = [str(item) if item is not None else "None" for item in table]
+    print("[" + " ".join(snapshot) + "]\n")
 
 def main():
-    num_elements = 500
-    table_size = 601  
-    max_displacements = 20
+    keys = ["ariana", "camila", "diego", "akira", "sandro", "amir", "albert", "alfredo", "omar"]
+    cuckoo = CuckooHashTable(size=20, max_displacements=9)
 
-    cuckoo = CuckooHashTable(size=table_size, max_displacements=max_displacements)
-    keys = generate_keys(num_elements)
-
-    inserted = 0
-    failed = 0
-    insert_times = []
-
-    print("== Insertando elementos ==")
     for key in keys:
-        start = time.time()
-        success = cuckoo.insert(key)
-        insert_times.append(time.time() - start)
+        print(f"Adding: {key}")
+        h1 = cuckoo.hash1.hash(key) % cuckoo.size
+        h2 = cuckoo.hash2.hash(key) % cuckoo.size
+        print(f"h1: {h1}, h2: {h2}")
 
-        if success:
-            inserted += 1
+        displaced = key
+        for i in range(cuckoo.max_displacements):
+            pos1 = cuckoo._position(displaced, 1)
+            if cuckoo.table[pos1] is None:
+                cuckoo.table[pos1] = displaced
+                print(f"Inserted {displaced} at position h1 = {pos1}")
+                break
+
+            print(f"Displacing {cuckoo.table[pos1]} from h1 = {pos1} with {displaced}")
+            displaced, cuckoo.table[pos1] = cuckoo.table[pos1], displaced
+
+            pos2 = cuckoo._position(displaced, 2)
+            if cuckoo.table[pos2] is None:
+                cuckoo.table[pos2] = displaced
+                print(f"Inserted {displaced} at position h2 = {pos2}")
+                break
+
+            print(f"Displacing {cuckoo.table[pos2]} from h2 = {pos2} with {displaced}")
+            displaced, cuckoo.table[pos2] = cuckoo.table[pos2], displaced
         else:
-            failed += 1
+            print(f"Failed to insert {key} after max displacements")
 
-    print(f"Insertados exitosamente: {inserted}")
-    print(f"Fallos de inserción: {failed}")
-    print(f"Tasa de fallo: {failed / num_elements * 100:.2f}%")
-    print(f"Tiempo promedio de inserción: {sum(insert_times) / len(insert_times):.6f} s")
+        show_table(cuckoo.table)
+    
+    print("Membership checks")
+    test_keys = ["ariana", "camila", "diego", "akira", "sandro", "alfredo", "amir", "albert", "omar"]
+    for key in test_keys:
+        result = cuckoo.contains(key)
+        status = "Found in table" if result else "Not found"
+        print(f"  {key:>8}: {status}")
 
-    print("\n== Probando búsquedas ==")
-    found = 0
-    search_times = []
-
-    for key in keys:
-        start = time.time()
-        if cuckoo.contains(key):
-            found += 1
-        search_times.append(time.time() - start)
-
-    print(f"Búsquedas exitosas: {found} / {num_elements}")
-    print(f"Tiempo promedio de búsqueda: {sum(search_times) / len(search_times):.6f} s")
-
-    print("\n== Estado final de la tabla ==")
-    print(cuckoo)
+    print("\nFinal table state")
+    show_table(cuckoo.table)
 
 if __name__ == "__main__":
     main()
