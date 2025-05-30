@@ -10,8 +10,9 @@ if not os.path.exists('statistics'):
     os.makedirs('statistics', exist_ok=True)
 
 class BloomFilterProfile(unittest.TestCase):
-    Sizes = [100, 500, 1000, 5000, 10000, 50000, 100000, 500000]
-    Runs = 10000  # Number of profiling runs for each method and size
+    Sizes = [100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, \
+             10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
+    Runs = 1000  # Number of profiling runs for each method and size
     OutputFileName = 'statistics/profile_bf.csv'
 
     @staticmethod
@@ -65,3 +66,28 @@ class BloomFilterProfile(unittest.TestCase):
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BloomFilterProfile)
 unittest.TextTestRunner(verbosity=2).run(suite)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the CSV data
+data = pd.read_csv("statistics/profile_bf.csv")
+
+# Group by filter size and method, calculate average per-call time
+avg_times = data.groupby(["filter_size", "method_name"])["per_call_time"].mean().unstack()
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.plot(avg_times.index, avg_times["add"], marker='o', label="Add (average)")
+plt.plot(avg_times.index, avg_times["contains"], marker='o', label="Contains (average)")
+
+plt.xlabel("Bloom Filter Size")
+plt.ylabel("Average Time per Call (seconds)")
+plt.title("Average Time per Call for add() and contains() by Bloom Filter Size")
+plt.legend()
+plt.grid(True, linestyle="--", alpha=0.5)
+plt.tight_layout()
+
+# Save the plot
+plt.savefig("statistics/profile_average_bf_plot.png", dpi=300)
+print("Saved plot to bloom_filter_avg_times.png")
