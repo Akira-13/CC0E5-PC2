@@ -39,7 +39,7 @@ def test_insert_duplicate_key():
 
 def test_insertion_failure_due_to_collisions():
     table = CuckooHashTable(size=3, max_displacements=5)
-    keys = [1, 2, 3, 4, 5, 6]
+    keys = [1, 2, 3, 4, 5, 6, 7]
 
     results = [table.insert(k) for k in keys]
     assert any(not r for r in results), "at least one insertion should fail due to limited table size"
@@ -54,5 +54,6 @@ def test_table_str_representation():
     table.insert("x")
     s = str(table)
     assert isinstance(s, str)
+    assert "Tabla1" in s and "Tabla2" in s
     assert "x" in s or "None" in s 
 

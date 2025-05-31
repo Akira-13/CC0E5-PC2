@@ -12,7 +12,8 @@ class CuckooHashTable:
         
         self.size = size
         self.max_displacements = max_displacements
-        self.table = [None] * size
+        self.table1 = [None] * size
+        self.table2 = [None] * size
         self.hash1 = TwistedTabulationHash(seed=1)
         self.hash2 = TwistedTabulationHash(seed=2)
 
@@ -21,45 +22,46 @@ class CuckooHashTable:
         return h.hash(key) % self.size
 
     def insert(self, key: Union[int, str, bytes]) -> bool:
-        pos1 = self._position(key, 1)
-        if self.table[pos1] is None:
-            self.table[pos1] = key
-            return True
-
+        use_first = True
         displaced = key
         for _ in range(self.max_displacements):
-            pos1 = self._position(displaced, 1)
-            displaced, self.table[pos1] = self.table[pos1], displaced
-
-            pos2 = self._position(displaced, 2)
-            if self.table[pos2] is None:
-                self.table[pos2] = displaced
-                return True
-
-            displaced, self.table[pos2] = self.table[pos2], displaced
+            if use_first:
+                pos = self._position(displaced, 1)
+                if self.table1[pos] is None:
+                    self.table1[pos] = displaced
+                    return True
+                displaced, self.table1[pos] = self.table1[pos], displaced
+            else:
+                pos = self._position(displaced, 2)
+                if self.table2[pos] is None:
+                    self.table2[pos] = displaced
+                    return True
+                displaced, self.table2[pos] = self.table2[pos], displaced
+            # Alternar tabla
+            use_first = not use_first
 
         # Rehashing needed
         return False
 
     def contains(self, key: Union[int, str, bytes]) -> bool:
         return (
-            self.table[self._position(key, 1)] == key or
-            self.table[self._position(key, 2)] == key
+            self.table1[self._position(key, 1)] == key or
+            self.table2[self._position(key, 2)] == key
         )
 
     def __str__(self):
-        return str(self.table)
+        return (f"Tabla1: {self.table1}\n"
+                f"Tabla2: {self.table2}")
 
 
 if __name__ == "__main__":
     cuckoo = CuckooHashTable(size=11)
     keys = ["apple", "banana", "cherry", "date", "fig", "grape"]
 
-    results = []
     for key in keys:
-        success = cuckoo.insert(key)
-        results.append((key, success))
-
-    for key, inserted in results:
+        inserted = cuckoo.insert(key)
         estado = "Insertado" if inserted else "Falló"
         print(f"{key:>8}: {estado}")
+
+    print("\nEstado final de las tablas:")
+    print(cuckoo)
