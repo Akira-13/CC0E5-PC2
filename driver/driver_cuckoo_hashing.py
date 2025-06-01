@@ -17,7 +17,7 @@ def main():
         print(f"h1: {h1}, h2: {h2}")
 
         displaced = key
-        current_table = 1  # Empezamos siempre en la tabla 1
+        current_table = 1  
 
         for i in range(cuckoo.max_displacements):
             if current_table == 1:
