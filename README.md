@@ -77,8 +77,9 @@ Los resultados estadísticos, como los de los profilers, se guardan en `statisti
 ### Estructura
 
 ```
-    ├── README.md
+├── README.md
 ├── requirements.txt
+├── Informe Técnico.ipynb
 ├── driver
 │   ├── driver_cuckoo_hashing.py
 │   ├── driver_false_positive_bf.py
@@ -86,13 +87,12 @@ Los resultados estadísticos, como los de los profilers, se guardan en `statisti
 │   ├── driver_uniformity_analysis.py
 ├── profilers
 │   ├── profiler_bloom_filter.py
+│   ├── profiler_cuckoo_hashing.py
 ├── statistics
-│   ├── double_tabulation_uniformity_analysis.png
-│   ├── false_positive_rates_bf_comparison.png
-│   ├── profile_average_bf_plot.png
-│   ├── profile_bf.csv
-│   ├── simple_tabulation_uniformity_analysis.png
-│   └── twisted_tabulation_uniformity_analysis.png
+│   ├── cuckoo_failure_vs_load.py
+│   ├── profile_average_bf_plot.py
+│   ├── simple_tabulation_uniformity_analysis.py
+│   ├── ...
 ├── structures
 │   ├── __init__.py
 │   ├── cuckoo_hashing.py
