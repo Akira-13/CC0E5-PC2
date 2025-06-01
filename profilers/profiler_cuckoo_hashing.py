@@ -72,9 +72,6 @@ def perfilado_cuckoo():
             search_writer.writerow([table_size, len(inserted_keys), avg_search_time])
 
     print("Perfilado completo: inserción, fallos y búsqueda.")
-    print(f"INSERT_CSV = {INSERT_CSV}")
-    print(f"FAILURE_CSV = {FAILURE_CSV}")
-    print(f"SEARCH_CSV = {SEARCH_CSV}")
 
 def graficar():
     insert_df = pd.read_csv(INSERT_CSV)
